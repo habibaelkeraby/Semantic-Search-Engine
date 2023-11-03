@@ -142,4 +142,24 @@ def search_similar_companies(search_term):
   return pd.DataFrame(company_names, columns=['Relevance','Company Details','Company Name','Website Text','Website Links'])
 
 # search for companies that are related to below search parameters
-st.write(search_similar_companies('halal'))
+# st.write(search_similar_companies('halal'))
+#---- Streamlit App Interface ----#
+# Customize layout
+st.set_page_config(layout="wide")
+
+st.title("Semantic Search Engline")
+st.subheader("Output search results ranked by relevance based on semantic similarity with keyword input")
+
+#Expandable section for general instructions
+with st.expander("Follow the steps below to search the database"):
+  st.write("""1. Use the search bar below to input your search keywords.
+            \n2. Once you click search, the results will be displayed, sorted by highest relevance.
+            """)
+# User input using form and single line text input
+with st.form("my_form"):
+   search_keyword = st.text_input('Search Bar', placehoder='I am searching for...')
+
+   # Every form must have a submit button.
+   submitted = st.form_submit_button("Search")
+   if submitted:
+       st.write(search_similar_companies(search_keyword))
