@@ -157,7 +157,7 @@ with st.expander("Follow the steps below to search the database"):
             """)
 # User input using form and single line text input
 with st.form("my_form"):
-   search_keyword = st.text_input('Search Bar', placehoder='I am searching for...')
+   search_keyword = st.text_input("Search Bar", "I am searching for...",key="placeholder")
 
    # Every form must have a submit button.
    submitted = st.form_submit_button("Search")
