@@ -63,7 +63,7 @@ def spacy_tokenizer(sentence):
     #return tokens
     return tokens
 
-scrapping_df['text_tokenized'] = (df['industry'] + df['text']).map(lambda x: spacy_tokenizer(x))
+scrapping_df['text_tokenized'] = (scrapping_df['industry'] + scrapping_df['text']).map(lambda x: spacy_tokenizer(x))
 
 company_text = scrapping_df['text_tokenized']
 
