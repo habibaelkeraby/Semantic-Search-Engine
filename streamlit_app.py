@@ -18,13 +18,9 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-scrapping_df = pd.read_json('companyScrapped.json')
+scrapping_df = pd.read_json('companies.json')
 
 spacy_nlp = spacy.load('en_core_web_sm')
-#spacy_nlp =spacy.load('lib_spacy/spacy-models-en_core_web_sm-3.1.0/spacy-models-en_core_web_sm-3.1.0/meta/en_core_web_sm-3.0.0a1')
-#spacy_nlp = spacy.load('en_core_web_sm-3.0.0a1.json')
-#spacy_nlp = en_core_web_sm_abd.load()
-#spacy_nlp = "en_core_web_sm"
 
 #create list of punctuations and stopwords
 punctuations = string.punctuation
@@ -67,17 +63,9 @@ def spacy_tokenizer(sentence):
     #return tokens
     return tokens
 
-scrapping_df['webSiteText_tokenized'] = scrapping_df['webSiteText'].map(lambda x: spacy_tokenizer(x))
+scrapping_df['text_tokenized'] = (df['industry'] + df['text']).map(lambda x: spacy_tokenizer(x))
 
-company_text = scrapping_df['webSiteText_tokenized']
-
-series = pd.Series(np.concatenate(company_text)).value_counts()[:100]
-wordcloud = WordCloud(background_color='white').generate_from_frequencies(series)
-
-plt.figure(figsize=(15,15), facecolor = None)
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis('off')
-plt.show()
+company_text = scrapping_df['text_tokenized']
 
 #creating term dictionary
 dictionary = corpora.Dictionary(company_text)
@@ -111,6 +99,7 @@ company_lsi_corpus = gensim.corpora.MmCorpus('company_lsi_model_mm')
 
 company_index = MatrixSimilarity(company_lsi_corpus, num_features = company_lsi_corpus.num_terms)
 
+# search for companies that are related to search term
 def search_similar_companies(search_term):
 
   query_bow = dictionary.doc2bow(spacy_tokenizer(search_term))
@@ -129,20 +118,16 @@ def search_similar_companies(search_term):
     company_names.append (
         {
             'Relevance': round((company[1] * 100),2),
-            'Company Details': scrapping_df['company'][company[0]],
-            'Company Name': scrapping_df["company"][company[0]].get('name'),
-            'Website Text': scrapping_df['webSiteText'][company[0]],
-            'Website Links': scrapping_df['links'][company[0]],
+            'Industry': scrapping_df['industry'][company[0]],
+            'Text': scrapping_df['text'][company[0]],
         }
 
     )
     if j == (company_index.num_best-1):
         break
 
-  return pd.DataFrame(company_names, columns=['Relevance','Company Details','Company Name','Website Text','Website Links'])
-
-# search for companies that are related to below search parameters
-# st.write(search_similar_companies('halal'))
+  return pd.DataFrame(company_names, columns=['Relevance','Industry','Text'])
+    
 #---- Streamlit App Interface ----#
 # Customize layout
 st.set_page_config(layout="wide")
