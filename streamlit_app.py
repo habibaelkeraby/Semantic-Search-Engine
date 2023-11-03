@@ -142,4 +142,4 @@ def search_similar_companies(search_term):
   return pd.DataFrame(company_names, columns=['Relevance','Company Details','Company Name','Website Text','Website Links'])
 
 # search for companies that are related to below search parameters
-search_similar_companies('halal')
+st.write(search_similar_companies('halal'))
